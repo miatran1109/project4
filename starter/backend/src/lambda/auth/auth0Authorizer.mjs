@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import jsonwebtoken, { verify } from 'jsonwebtoken'
+import jsonwebtoken from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger.mjs'
 
 const logger = createLogger('auth')
@@ -48,12 +48,13 @@ async function verifyToken(authHeader) {
 
   const keys = (await Axios.get(jwksUrl)).data.keys;
   const signingKey = keys.find(key => key.kid === jwt.header.kid);
-  logger.info('Signing key', { signingKey });
   if (!signingKey) throw new Error('Invalid signing key');
   const secret = signingKey.x5c[0];
-  const cert = `-----BEGIN CERTIFICATE----- ${secret} -----END CERTIFICATE-----`
-  const verifiedToken = verify(token, cert, { algorithms: ['RS256'] })
-  logger.info('Token verified', verifiedToken)
+
+  const cleanedSecret = secret.replace(/(\r\n|\n|\r)/gm, '');
+  const cert = `-----BEGIN CERTIFICATE-----\n${cleanedSecret}\n-----END CERTIFICATE-----`;
+
+  const verifiedToken = jsonwebtoken.verify(token, cert.split(String.raw`\n`).join('\n'), { algorithms: ['RS256'] })
   return verifiedToken;
 }
 

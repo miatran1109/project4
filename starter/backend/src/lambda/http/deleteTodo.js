@@ -1,8 +1,19 @@
+import { createLogger } from '../../utils/logger.mjs'
+import { getUserId } from "../utils.mjs";
+import { deleteTodo } from "../../services/deleteTodo.js";
 
-export function handler(event) {
+const logger = createLogger('deleteTodo')
+export async function handler(event) {
   const todoId = event.pathParameters.todoId
-
-  // TODO: Remove a TODO item by id
-  return undefined
+  const jwtToken = getUserId(event);
+  await deleteTodo(jwtToken, todoId)
+  return {
+    statusCode: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    },
+    body: undefined
+  }
 }
 
