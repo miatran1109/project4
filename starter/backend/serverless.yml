@@ -55,7 +55,7 @@ functions:
           cors: true
           authorizer: Auth
           request:
-            schema:
+            schemas:
               application/json: ${file(src/schema/create-todo-schema.json)}
     iamRoleStatements:
       - Effect: Allow
@@ -78,7 +78,7 @@ functions:
           cors: true
           authorizer: Auth
           request:
-            schema:
+            schemas:
               application/json: ${file(src/schema/update-todo-schema.json)}
     iamRoleStatements:
       - Effect: Allow
